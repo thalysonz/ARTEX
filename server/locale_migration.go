@@ -9,6 +9,7 @@ import (
 
 	"github.com/Autumn-27/artex/agent"
 	"github.com/Autumn-27/artex/db"
+	"github.com/Autumn-27/artex/traffic"
 )
 
 // legacyZhPromptSHA256 holds the SHA-256 of each agent's Chinese default prompt as
@@ -64,7 +65,7 @@ func defaultPromptFor(key string) string {
 //
 // Fresh databases are seeded in English already, so nothing matches there.
 func (s *Server) migrateEnglishDefaults() {
-	const flag = "locale_english_defaults_v1"
+	const flag = "locale_english_defaults_v2" // v2: also traffic + retest tools
 	if v, _, _ := s.m.pg.GetSetting(flag); v == "true" {
 		return
 	}
@@ -103,7 +104,13 @@ func (s *Server) migrateEnglishDefaults() {
 			log.Printf("[tools] failed to refresh %s to English description: %v", key, err)
 		}
 	}
-	for _, t := range append(s.orchestrationTools(), s.platformTools()...) {
+	core := append(s.orchestrationTools(), s.platformTools()...)
+	core = append(core, s.findingRetestTools()...)
+	for _, t := range core {
+		schema, _ := json.Marshal(t.InputSchema())
+		refresh(t.Name(), t.Description(), schema)
+	}
+	for _, t := range traffic.SeedToolMetas() {
 		schema, _ := json.Marshal(t.InputSchema())
 		refresh(t.Name(), t.Description(), schema)
 	}

@@ -22,8 +22,16 @@ export function LocaleGate({ children }: { children: React.ReactNode }) {
   );
   React.useEffect(() => {
     document.documentElement.lang = getLocale();
-    // The prerendered <title> comes from build-time metadata (Chinese source).
-    document.title = APP_CONFIG.meta.title;
+    // The <title> comes from build-time metadata (Chinese source) and Next may
+    // (re)insert it after this effect runs, so keep re-applying the localized one.
+    const want = APP_CONFIG.meta.title;
+    const sync = () => {
+      if (document.title !== want) document.title = want;
+    };
+    sync();
+    const obs = new MutationObserver(sync);
+    obs.observe(document.head, { childList: true, subtree: true, characterData: true });
+    return () => obs.disconnect();
   }, []);
   return hydrated ? children : null;
 }

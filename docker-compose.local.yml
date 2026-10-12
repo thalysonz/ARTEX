@@ -1,0 +1,8 @@
+# Override that builds the image from this checkout instead of pulling autumn27/artex.
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up -d --build
+services:
+  artex:
+    image: artex:local
+    build:
+      context: .
+      dockerfile: Dockerfile.build

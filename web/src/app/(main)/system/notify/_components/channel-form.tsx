@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { t } from "@/i18n";
 import type { NotificationFilter } from "@/lib/types";
 
 // asText / inputType 是本文件内的取值辅助（与控件渲染强相关），不放在 channel-fields。
@@ -120,7 +121,8 @@ export function ConfigField({
   const hint = masked ? (
     <p className="text-muted-foreground flex items-center gap-1 text-xs">
       <CheckIcon className="size-3" />
-      已保存{maskedTail ? `（尾号 ${maskedTail}）` : ""} · 填入新值即覆盖，清空则删除该项
+      {maskedTail ? t("已保存（尾号 {tail}）", { tail: maskedTail }) : t("已保存")} ·{" "}
+      {t("填入新值即覆盖，清空则删除该项")}
     </p>
   ) : (
     def.help && <p className="text-muted-foreground text-xs">{def.help}</p>
@@ -141,13 +143,13 @@ export function FilterSummary({ filter }: { filter: NotificationFilter }) {
   if (filter.min_severity) {
     parts.push(SEVERITY_OPTIONS.find((o) => o.value === filter.min_severity)?.label ?? filter.min_severity);
   }
-  if (filter.vulnclass_include?.length) parts.push(`类型含 ${filter.vulnclass_include.length} 词`);
-  if (filter.vulnclass_exclude?.length) parts.push(`排除 ${filter.vulnclass_exclude.length} 词`);
-  if (filter.task_ids?.length) parts.push(`${filter.task_ids.length} 个任务`);
-  if (filter.asset_ids?.length) parts.push(`${filter.asset_ids.length} 个资产`);
-  if (filter.on_status_change) parts.push("含状态变更");
+  if (filter.vulnclass_include?.length) parts.push(t("类型含 {n} 词", { n: filter.vulnclass_include.length }));
+  if (filter.vulnclass_exclude?.length) parts.push(t("排除 {n} 词", { n: filter.vulnclass_exclude.length }));
+  if (filter.task_ids?.length) parts.push(t("{n} 个任务", { n: filter.task_ids.length }));
+  if (filter.asset_ids?.length) parts.push(t("{n} 个资产", { n: filter.asset_ids.length }));
+  if (filter.on_status_change) parts.push(t("含状态变更"));
   if (parts.length === 0) {
-    return <p className="text-muted-foreground text-sm">全部漏洞</p>;
+    return <p className="text-muted-foreground text-sm">{t("全部漏洞")}</p>;
   }
   return <p className="text-muted-foreground text-sm">{parts.join(" · ")}</p>;
 }

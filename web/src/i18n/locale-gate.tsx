@@ -2,6 +2,8 @@
 
 import * as React from "react";
 
+import { APP_CONFIG } from "@/config/app-config";
+
 import { getLocale } from "./index";
 
 // Nothing to subscribe to: the value only differs between server and client.
@@ -20,6 +22,8 @@ export function LocaleGate({ children }: { children: React.ReactNode }) {
   );
   React.useEffect(() => {
     document.documentElement.lang = getLocale();
+    // The prerendered <title> comes from build-time metadata (Chinese source).
+    document.title = APP_CONFIG.meta.title;
   }, []);
   return hydrated ? children : null;
 }

@@ -3,6 +3,7 @@ import agentsIntercept from "./agents-intercept";
 import common from "./common";
 import dashboardChat from "./dashboard-chat";
 import findingsAssets from "./findings-assets";
+import overrides from "./overrides";
 import shell from "./shell";
 import systemConfig from "./system-config";
 import taskDetail from "./task-detail";
@@ -18,4 +19,5 @@ export const MESSAGES: Messages = {
   ...findingsAssets,
   ...dashboardChat,
   ...shell,
+  ...overrides,
 };

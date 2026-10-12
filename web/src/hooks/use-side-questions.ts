@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { toast } from "sonner";
 
+import { t } from "@/i18n";
 import { sseUrl } from "@/lib/api";
 import { isBtwCommand, type SideExchange, type SideHistory, sideAPI } from "@/lib/side-questions";
 
@@ -138,7 +139,7 @@ export function useSideQuestions(parent: string | null) {
         restoreFailedDraft([item]);
         if (item.status !== "running") stream.close();
       } catch {
-        setError("旁路数据解析失败，请重新打开面板");
+        setError(t("旁路数据解析失败，请重新打开面板"));
       }
     });
     stream.addEventListener("cleared", () => {

@@ -10,6 +10,10 @@
  * `{ "<zh source>": ["<en>", "<pt-BR>"] }`. A missing entry falls back to the
  * Chinese source, so untranslated text degrades visibly instead of breaking.
  *
+ * When one Chinese word needs different translations (action vs. status, e.g.
+ * 拦截 "Block" vs. "Blocked"), add a context suffix: t("拦截@@status"). The
+ * suffix is part of the lookup key and stripped from the Chinese fallback.
+ *
  * The locale is resolved once, synchronously, when this module is first
  * evaluated (localStorage → browser language → English). That makes `t()` safe to
  * call at module scope (label maps, constants) as well as in render. Switching
@@ -84,7 +88,8 @@ export function t(src: string, params?: Params): string {
     const hit = MESSAGES[src]?.[slot];
     if (hit) return interpolate(hit, params);
   }
-  return interpolate(src, params);
+  const ctx = src.indexOf("@@");
+  return interpolate(ctx >= 0 ? src.slice(0, ctx) : src, params);
 }
 
 /** BCP-47 tag for Intl / toLocaleString calls. */

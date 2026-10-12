@@ -3,6 +3,7 @@
 // a few fields the backend serializes differently (e.g. created_at as a unix int)
 // are passed through and formatted at the call site.
 
+import { t } from "@/i18n";
 import type { ChatMention } from "@/lib/chat-mentions";
 import { MOCK } from "@/lib/mock/enabled";
 import { mockHandle } from "@/lib/mock/handler";
@@ -128,7 +129,7 @@ export async function http<T>(path: string, init?: RequestInit): Promise<T> {
       document.cookie = "artex_token=; path=/; max-age=0";
       window.location.href = "/login";
     }
-    throw new Error("未授权");
+    throw new Error(t("未授权"));
   }
   if (!r.ok) {
     const fallback = `${init?.method ?? "GET"} ${path}: ${r.status}`;
@@ -448,7 +449,7 @@ export const api = {
       headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       body: fd,
     });
-    if (!r.ok) throw new Error(`上传失败: ${r.status}`);
+    if (!r.ok) throw new Error(t("上传失败: {status}", { status: r.status }));
     return r.json() as Promise<{ uploaded: number }>;
   },
   workspaceDownload: async (path: string) => {
@@ -460,7 +461,7 @@ export const api = {
       const r = await fetch(`/api/workspace/download?path=${encodeURIComponent(path)}`, {
         headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       });
-      if (!r.ok) throw new Error(`下载失败: ${r.status}`);
+      if (!r.ok) throw new Error(t("下载失败: {status}", { status: r.status }));
       blob = await r.blob();
     }
     const objUrl = URL.createObjectURL(blob);
@@ -649,8 +650,8 @@ export const api = {
       { headers: token ? { Authorization: `Bearer ${token}` } : {} },
     );
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: "下载失败" }));
-      throw new Error(error.error ?? "下载失败");
+      const error = await response.json().catch(() => ({ error: t("下载失败") }));
+      throw new Error(error.error ?? t("下载失败"));
     }
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
@@ -825,8 +826,7 @@ export const api = {
   // 渠道是多实例资源（同一类型可配多个机器人、各有过滤规则），因此独立成组，
   // 不塞进扁平的 settings 键值里。
   notifyMeta: () => get<NotificationMeta>(`/notify/meta`),
-  notifyChannels: () =>
-    get<{ channels: NotificationChannel[] }>(`/notify/channels`).then((r) => arr(r.channels)),
+  notifyChannels: () => get<{ channels: NotificationChannel[] }>(`/notify/channels`).then((r) => arr(r.channels)),
   notifyCreateChannel: (payload: {
     name: string;
     kind: string;
@@ -899,7 +899,7 @@ export const api = {
       headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       body: fd,
     });
-    if (!r.ok) throw new Error(`上传失败: ${r.status} ${await r.text()}`);
+    if (!r.ok) throw new Error(t("上传失败: {status} {detail}", { status: r.status, detail: await r.text() }));
     return r.json() as Promise<{ attachments: ChatAttachment[] }>;
   },
   stopChat: (taskId: string) => post<{ status: string }>(`/tasks/${taskId}/chat/stop`, {}),
@@ -1160,7 +1160,7 @@ export const api = {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     const body = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error(body?.error || `上传失败(${r.status})`);
+    if (!r.ok) throw new Error(body?.error || t("上传失败({status})", { status: r.status }));
     return body;
   },
   deleteSkill: (name: string) => del<{ deleted: string }>(`/skills/${name}`),

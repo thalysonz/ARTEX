@@ -1,3 +1,4 @@
+import { t } from "@/i18n";
 import type { CompanyScopeKind, CompanyScopeRule } from "@/lib/types";
 
 export const MAX_COMPANY_SCOPE_VALUE_LENGTH = 1024;
@@ -96,14 +97,14 @@ function domainHostname(value: string): string | null {
 
 export function companyScopeRuleError(rule: CompanyScopeRule): string {
   const value = rule.value.trim();
-  if (!value) return "请填写范围值";
+  if (!value) return t("请填写范围值");
   if (Array.from(value).length > MAX_COMPANY_SCOPE_VALUE_LENGTH) {
-    return `最多 ${MAX_COMPANY_SCOPE_VALUE_LENGTH} 个字符`;
+    return t("最多 {n} 个字符", { n: MAX_COMPANY_SCOPE_VALUE_LENGTH });
   }
   if (rule.kind === "domain") {
-    if (/\s/.test(value)) return "请输入不含空格的有效域名或 URL";
+    if (/\s/.test(value)) return t("请输入不含空格的有效域名或 URL");
     const hostname = domainHostname(value);
-    if (!hostname || ipVersion(hostname) !== null) return "请输入有效域名或 URL";
+    if (!hostname || ipVersion(hostname) !== null) return t("请输入有效域名或 URL");
     const labels = hostname.split(".");
     if (
       hostname.length > 253 ||
@@ -113,20 +114,20 @@ export function companyScopeRuleError(rule: CompanyScopeRule): string {
           !label || label.length > 63 || label.startsWith("-") || label.endsWith("-") || !/^[a-z0-9-]+$/i.test(label),
       )
     ) {
-      return "请输入有效域名或 URL";
+      return t("请输入有效域名或 URL");
     }
   }
-  if (rule.kind === "ip" && ipVersion(value) === null) return "请输入有效 IP";
+  if (rule.kind === "ip" && ipVersion(value) === null) return t("请输入有效 IP");
   if (rule.kind === "cidr") {
     const separator = value.lastIndexOf("/");
-    if (separator <= 0) return "请输入 CIDR 网段";
+    if (separator <= 0) return t("请输入 CIDR 网段");
     const address = value.slice(0, separator);
     const prefixText = value.slice(separator + 1);
     const version = ipVersion(address);
-    if (version === null || !/^\d+$/.test(prefixText)) return "请输入 CIDR 网段";
+    if (version === null || !/^\d+$/.test(prefixText)) return t("请输入 CIDR 网段");
     const prefix = Number(prefixText);
-    if (version === 4 && (prefix < 16 || prefix > 32)) return "IPv4 网段前缀需为 /16 至 /32";
-    if (version === 6 && (prefix < 32 || prefix > 128)) return "IPv6 网段前缀需为 /32 至 /128";
+    if (version === 4 && (prefix < 16 || prefix > 32)) return t("IPv4 网段前缀需为 /16 至 /32");
+    if (version === 6 && (prefix < 32 || prefix > 128)) return t("IPv6 网段前缀需为 /32 至 /128");
   }
   return "";
 }
@@ -138,7 +139,7 @@ export function classifyCompanyScopeLine(
 ): CompanyScopeTextIssue {
   const value = raw.trim();
   if (Array.from(value).length > MAX_COMPANY_SCOPE_VALUE_LENGTH) {
-    return { line, error: `最多 ${MAX_COMPANY_SCOPE_VALUE_LENGTH} 个字符` };
+    return { line, error: t("最多 {n} 个字符", { n: MAX_COMPANY_SCOPE_VALUE_LENGTH }) };
   }
   if (preservedRule) {
     const rule = { kind: preservedRule.kind, value };
@@ -156,7 +157,7 @@ export function classifyCompanyScopeLine(
     return error ? { line, error } : { line, rule };
   }
   if (ipVersion(value) !== null) return { line, rule: { kind: "ip", value } };
-  if (looksLikeIPAddress(value)) return { line, error: "请输入有效 IP" };
+  if (looksLikeIPAddress(value)) return { line, error: t("请输入有效 IP") };
 
   const looksLikeDomain = value.includes("://") || (!/\s/.test(value) && value.includes("."));
   if (looksLikeDomain) {

@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { ExplorationGraph } from "@/components/exploration-graph";
+import { t } from "@/i18n";
 import { api } from "@/lib/api";
 import type { Edge, TaskNode } from "@/lib/types";
 
@@ -23,7 +24,9 @@ export function FindingLineageView({ findingId }: { findingId: string }) {
         setNodes(g.nodes ?? []);
         setEdges(g.edges ?? []);
       })
-      .catch(() => {})
+      .catch(() => {
+        // Leave the graph empty; the empty-state message below covers it.
+      })
       .finally(() => {
         if (alive) setLoaded(true);
       });
@@ -35,7 +38,7 @@ export function FindingLineageView({ findingId }: { findingId: string }) {
   if (loaded && nodes.length === 0) {
     return (
       <p className="text-muted-foreground p-6 text-sm">
-        无链路可展示（该漏洞未关联探索节点，或所属任务已删除）。
+        {t("无链路可展示（该漏洞未关联探索节点，或所属任务已删除）。")}
       </p>
     );
   }
@@ -45,7 +48,7 @@ export function FindingLineageView({ findingId }: { findingId: string }) {
       nodes={nodes}
       edges={edges}
       className="h-[68vh]"
-      emptyHint={loaded ? "无链路" : "加载中…"}
+      emptyHint={loaded ? t("无链路") : t("加载中…")}
     />
   );
 }

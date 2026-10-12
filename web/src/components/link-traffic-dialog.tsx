@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { t } from "@/i18n";
 import { api } from "@/lib/api";
 import type { Finding, FindingsPage } from "@/lib/types";
 
@@ -66,7 +67,7 @@ export function LinkTrafficDialog({
         selected.finding_id,
         trafficIds.map((traffic_id) => ({ traffic_id })),
       );
-      toast.success(`已关联 ${trafficIds.length} 条流量到漏洞 #${selected.finding_id}`);
+      toast.success(t("已关联 {n} 条流量到漏洞 #{id}", { n: trafficIds.length, id: selected.finding_id }));
       onBound();
       onClose();
     } catch (e) {
@@ -84,15 +85,17 @@ export function LinkTrafficDialog({
     >
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>关联到漏洞</DialogTitle>
-          <DialogDescription>将所选 {trafficIds.length} 条流量保存为已有漏洞的证据。</DialogDescription>
+          <DialogTitle>{t("关联到漏洞")}</DialogTitle>
+          <DialogDescription>
+            {t("将所选 {n} 条流量保存为已有漏洞的证据。", { n: trafficIds.length })}
+          </DialogDescription>
         </DialogHeader>
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor="link-finding-query">查找漏洞</FieldLabel>
+            <FieldLabel htmlFor="link-finding-query">{t("查找漏洞")}</FieldLabel>
             <Input
               id="link-finding-query"
-              placeholder="名称 / 摘要 / 漏洞类别"
+              placeholder={t("名称 / 摘要 / 漏洞类别")}
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
@@ -126,35 +129,35 @@ export function LinkTrafficDialog({
           ))}
           {!data?.items.length ? (
             <p className="py-6 text-center text-sm text-muted-foreground">
-              {loading ? "加载中…" : "没有匹配的漏洞，请先登记漏洞"}
+              {loading ? t("加载中…") : t("没有匹配的漏洞，请先登记漏洞")}
             </p>
           ) : null}
         </div>
         <div className="flex items-center justify-between gap-2">
           <Button variant="outline" size="sm" disabled={loading || page <= 1} onClick={() => setPage((p) => p - 1)}>
-            上一页
+            {t("上一页")}
           </Button>
-          <span className="text-xs">
-            第 {page} 页 · 共 {data?.total ?? 0} 条
-          </span>
+          <span className="text-xs">{t("第 {page} 页 · 共 {total} 条", { page, total: data?.total ?? 0 })}</span>
           <Button
             variant="outline"
             size="sm"
             disabled={loading || page * 20 >= (data?.total ?? 0)}
             onClick={() => setPage((p) => p + 1)}
           >
-            下一页
+            {t("下一页")}
           </Button>
         </div>
         <p className="text-sm">
-          {selected ? `已选漏洞：#${selected.finding_id} ${selected.name || selected.vulnclass}` : "请选择一个漏洞"}
+          {selected
+            ? t("已选漏洞：#{id} {name}", { id: selected.finding_id, name: selected.name || selected.vulnclass })
+            : t("请选择一个漏洞")}
         </p>
         <DialogFooter>
           <Button variant="outline" disabled={busy} onClick={onClose}>
-            取消
+            {t("取消")}
           </Button>
           <Button disabled={busy || !selected} onClick={() => void save()}>
-            {busy ? "保存中…" : "确认关联"}
+            {busy ? t("保存中…") : t("确认关联")}
           </Button>
         </DialogFooter>
       </DialogContent>

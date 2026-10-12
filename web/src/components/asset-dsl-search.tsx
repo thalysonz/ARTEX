@@ -5,6 +5,7 @@ import * as React from "react";
 import { SearchIcon } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
+import { t } from "@/i18n";
 import { cn } from "@/lib/utils";
 
 // ── DSL autocomplete ──────────────────────────────────────────────────────────
@@ -14,167 +15,167 @@ import { cn } from "@/lib/utils";
 const DSL_FIELDS: { name: string; desc: string; ops: { op: string; desc: string }[] }[] = [
   {
     name: "domain",
-    desc: "域名（根域名/子域名/服务域名）",
+    desc: t("域名（根域名/子域名/服务域名）"),
     ops: [
-      { op: "=", desc: "模糊匹配" },
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "=", desc: t("模糊匹配") },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "ip",
-    desc: "IPv4/IPv6 地址",
+    desc: t("IPv4/IPv6 地址"),
     ops: [
-      { op: "=", desc: "模糊匹配" },
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "=", desc: t("模糊匹配") },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "url",
-    desc: "完整 URL（服务/接口）",
+    desc: t("完整 URL（服务/接口）"),
     ops: [
-      { op: "=", desc: "模糊匹配" },
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "=", desc: t("模糊匹配") },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "root_domain",
-    desc: "根域名",
+    desc: t("根域名"),
     ops: [
-      { op: "=", desc: "模糊匹配" },
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "=", desc: t("模糊匹配") },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "page_title",
-    desc: "页面标题（HTTP 服务）",
+    desc: t("页面标题（HTTP 服务）"),
     ops: [
-      { op: "=", desc: "模糊匹配" },
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "=", desc: t("模糊匹配") },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "icp",
-    desc: "ICP 备案号",
+    desc: t("ICP 备案号"),
     ops: [
-      { op: "=", desc: "模糊匹配" },
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "=", desc: t("模糊匹配") },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "service_name",
-    desc: "服务名称（非 HTTP 服务）",
+    desc: t("服务名称（非 HTTP 服务）"),
     ops: [
-      { op: "=", desc: "模糊匹配" },
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "=", desc: t("模糊匹配") },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "app_name",
-    desc: "应用名称",
+    desc: t("应用名称"),
     ops: [
-      { op: "=", desc: "模糊匹配" },
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "=", desc: t("模糊匹配") },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "bundle_id",
-    desc: "应用 Bundle ID",
+    desc: t("应用 Bundle ID"),
     ops: [
-      { op: "=", desc: "模糊匹配" },
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "=", desc: t("模糊匹配") },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "category",
-    desc: "应用分类",
+    desc: t("应用分类"),
     ops: [
-      { op: "=", desc: "模糊匹配" },
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "=", desc: t("模糊匹配") },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "app_icp",
-    desc: "应用 ICP 备案",
+    desc: t("应用 ICP 备案"),
     ops: [
-      { op: "=", desc: "模糊匹配" },
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "=", desc: t("模糊匹配") },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "method",
-    desc: "HTTP 方法 GET/POST/PUT/…",
+    desc: t("HTTP 方法 GET/POST/PUT/…"),
     ops: [
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "service_type",
-    desc: "服务类型：http | other",
+    desc: t("服务类型：http | other"),
     ops: [
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "record_type",
-    desc: "DNS 解析类型 A/CNAME/MX/…",
+    desc: t("DNS 解析类型 A/CNAME/MX/…"),
     ops: [
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "technology",
-    desc: "技术指纹（数组字段）",
+    desc: t("技术指纹（数组字段）"),
     ops: [
-      { op: "=", desc: "模糊匹配" },
-      { op: "==", desc: "精确匹配" },
-      { op: "!=", desc: "排除" },
+      { op: "=", desc: t("模糊匹配") },
+      { op: "==", desc: t("精确匹配") },
+      { op: "!=", desc: t("排除") },
     ],
   },
   {
     name: "port",
-    desc: "端口号（整数）",
+    desc: t("端口号（整数）"),
     ops: [
-      { op: "==", desc: "等于" },
-      { op: "!=", desc: "不等于" },
-      { op: ">", desc: "大于" },
-      { op: ">=", desc: "大于等于" },
-      { op: "<", desc: "小于" },
-      { op: "<=", desc: "小于等于" },
+      { op: "==", desc: t("等于") },
+      { op: "!=", desc: t("不等于") },
+      { op: ">", desc: t("大于") },
+      { op: ">=", desc: t("大于等于") },
+      { op: "<", desc: t("小于") },
+      { op: "<=", desc: t("小于等于") },
     ],
   },
   {
     name: "status_code",
-    desc: "HTTP 状态码（整数）",
+    desc: t("HTTP 状态码（整数）"),
     ops: [
-      { op: "==", desc: "等于" },
-      { op: "!=", desc: "不等于" },
-      { op: ">", desc: "大于" },
-      { op: ">=", desc: "大于等于" },
-      { op: "<", desc: "小于" },
-      { op: "<=", desc: "小于等于" },
+      { op: "==", desc: t("等于") },
+      { op: "!=", desc: t("不等于") },
+      { op: ">", desc: t("大于") },
+      { op: ">=", desc: t("大于等于") },
+      { op: "<", desc: t("小于") },
+      { op: "<=", desc: t("小于等于") },
     ],
   },
-  { name: "company_id", desc: "归属企业 ID（整数）", ops: [{ op: "==", desc: "等于" }] },
-  { name: "task_id", desc: "来源任务 ID（整数）", ops: [{ op: "==", desc: "等于" }] },
+  { name: "company_id", desc: t("归属企业 ID（整数）"), ops: [{ op: "==", desc: t("等于") }] },
+  { name: "task_id", desc: t("来源任务 ID（整数）"), ops: [{ op: "==", desc: t("等于") }] },
 ];
 
 const LOGIC_OPS = [
-  { label: "AND", desc: "且（两个条件都满足）" },
-  { label: "OR", desc: "或（满足其中之一）" },
+  { label: "AND", desc: t("且（两个条件都满足）") },
+  { label: "OR", desc: t("或（满足其中之一）") },
 ];
 
 interface DslSuggestion {
@@ -341,7 +342,7 @@ export function AssetDslSearch({
         <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           ref={inputRef}
-          placeholder="DSL 搜索：domain=example AND status_code>=400"
+          placeholder={t("DSL 搜索：domain=example AND status_code>=400")}
           value={query}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
@@ -375,7 +376,13 @@ export function AssetDslSearch({
       </div>
       {query.trim() && !open && (
         <p className="pl-1 text-[11px] text-muted-foreground">
-          {loading ? "搜索中…" : error ? <span className="text-destructive">{error}</span> : `找到 ${count ?? 0} 条`}
+          {loading ? (
+            t("搜索中…")
+          ) : error ? (
+            <span className="text-destructive">{error}</span>
+          ) : (
+            t("找到 {n} 条", { n: count ?? 0 })
+          )}
         </p>
       )}
     </div>

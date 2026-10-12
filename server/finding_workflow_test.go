@@ -131,7 +131,7 @@ func TestFindingWorkflowAutoHintToPlannerAndSetting(t *testing.T) {
 	}
 	workflowCall(t, ctx, s.toolGetFindingTraffic(), map[string]any{"finding_id": recorded.FindingID}, false)
 	wrong := workflowCall(t, ctx, s.toolGetFindingTraffic(), map[string]any{"finding_id": int64(900000000000000000)}, true)
-	if !strings.Contains(wrong, "独立漏洞记录 ID") {
+	if !strings.Contains(wrong, "standalone finding record ID") {
 		t.Fatal("ambiguous ID error", wrong)
 	}
 	input["finding_id"] = recorded.FindingID
@@ -175,7 +175,7 @@ func TestFindingWorkflowAutoHintToPlannerAndSetting(t *testing.T) {
 	if err := json.Unmarshal([]byte(strings.SplitN(offResult, "\n", 2)[1]), &offRecord); err != nil {
 		t.Fatal(err)
 	}
-	if offRecord.FindingID <= 0 || len(offRecord.Traffic.Bindings) != 0 || offRecord.EvidenceStatus != "not_bound" || !strings.Contains(offRecord.EvidenceNote, "已关闭") {
+	if offRecord.FindingID <= 0 || len(offRecord.Traffic.Bindings) != 0 || offRecord.EvidenceStatus != "not_bound" || !strings.Contains(offRecord.EvidenceNote, "disabled") {
 		t.Fatal("disabled binding discarded finding or bound evidence", offResult)
 	}
 	workflowCall(t, ctx, report, map[string]any{"vulnclass": "TCP", "severity": "low", "summary": "no packet needed"}, false)
@@ -246,7 +246,7 @@ func TestFindingWorkflowMigrationPreservesUserConfiguration(t *testing.T) {
 	}
 	search, _ := pg.GetTool("traffic_search")
 	get, _ := pg.GetTool("traffic_get")
-	if !strings.Contains(search.Description, "支持裸主机、主机:端口或完整 URL") {
+	if !strings.Contains(search.Description, "accepts a bare host, host:port, or a full URL") {
 		t.Fatal("traffic_search description migration missing host/port guidance")
 	}
 	if search.Enabled || !contains(search.Agents, "reporter") || get.Enabled || len(get.Agents) != 1 || get.Agents[0] != "custom-agent" {

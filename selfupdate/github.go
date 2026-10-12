@@ -94,7 +94,7 @@ func NewClient(proxy string) *http.Client {
 		Timeout:   30 * time.Minute, // 下载整包，不能按请求级超时卡死
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			if len(via) >= 10 {
-				return fmt.Errorf("重定向次数过多")
+				return fmt.Errorf("too many redirects")
 			}
 			if err := checkURL(req.URL); err != nil {
 				return err
@@ -108,10 +108,10 @@ func NewClient(proxy string) *http.Client {
 // checkURL 强制 https + 域名白名单。
 func checkURL(u *url.URL) error {
 	if u.Scheme != "https" {
-		return fmt.Errorf("拒绝非 HTTPS 地址: %s", u.Scheme+"://"+u.Host)
+		return fmt.Errorf("refusing non-HTTPS address: %s", u.Scheme+"://"+u.Host)
 	}
 	if !allowedHosts[strings.ToLower(u.Hostname())] {
-		return fmt.Errorf("拒绝非 GitHub 域名: %s", u.Hostname())
+		return fmt.Errorf("refusing non-GitHub domain: %s", u.Hostname())
 	}
 	return nil
 }
@@ -131,29 +131,29 @@ func FetchLatest(ctx context.Context, c *http.Client) (*Release, error) {
 
 	resp, err := c.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("访问 GitHub 失败（可在系统设置里配置全局代理）: %w", err)
+		return nil, fmt.Errorf("failed to reach GitHub (a global proxy can be configured in system settings): %w", err)
 	}
 	defer resp.Body.Close()
 
 	switch {
 	case resp.StatusCode == http.StatusUnauthorized:
-		return nil, fmt.Errorf("GitHub 认证失败，请检查后端环境变量 %s", GitHubTokenEnv)
+		return nil, fmt.Errorf("GitHub authentication failed, please check the backend environment variable %s", GitHubTokenEnv)
 	case resp.StatusCode == http.StatusForbidden:
-		return nil, fmt.Errorf("GitHub 拒绝访问：请检查令牌的仓库 Contents 读取权限或 API 限额")
+		return nil, fmt.Errorf("GitHub denied access: check the token's repository Contents read permission or API quota")
 	case resp.StatusCode == http.StatusTooManyRequests:
-		return nil, fmt.Errorf("GitHub 接口限流，请稍后再试")
+		return nil, fmt.Errorf("GitHub API rate limit hit, please try again later")
 	case resp.StatusCode == http.StatusNotFound:
-		return nil, fmt.Errorf("仓库 %s 不可访问或尚未发布正式版本；私有仓库请在后端设置 %s（需 Contents 读取权限）", Repo, GitHubTokenEnv)
+		return nil, fmt.Errorf("repository %s is not accessible or has no published release yet; for a private repository set %s on the backend (requires Contents read permission)", Repo, GitHubTokenEnv)
 	case resp.StatusCode != http.StatusOK:
-		return nil, fmt.Errorf("GitHub 返回 %d", resp.StatusCode)
+		return nil, fmt.Errorf("GitHub returned %d", resp.StatusCode)
 	}
 
 	var rel Release
 	if err := json.NewDecoder(resp.Body).Decode(&rel); err != nil {
-		return nil, fmt.Errorf("解析 Release 失败: %w", err)
+		return nil, fmt.Errorf("failed to parse Release: %w", err)
 	}
 	if strings.TrimSpace(rel.TagName) == "" {
-		return nil, fmt.Errorf("Release 缺少 tag")
+		return nil, fmt.Errorf("Release is missing a tag")
 	}
 	return &rel, nil
 }

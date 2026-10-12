@@ -131,9 +131,9 @@ func assetLine(assets []string, limit int) string {
 		return ""
 	}
 	if limit <= 0 || len(assets) <= limit {
-		return strings.Join(assets, "、")
+		return strings.Join(assets, ", ")
 	}
-	return strings.Join(assets[:limit], "、") + " 等 " + itoa(len(assets)) + " 个"
+	return strings.Join(assets[:limit], ", ") + " (" + itoa(len(assets)) + " total)"
 }
 
 // itoa 是 strconv.Itoa 的短别名，仅用于拼接展示文本，避免到处 import strconv。

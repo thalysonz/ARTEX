@@ -139,7 +139,7 @@ func TestPublicReleaseDownloadWithoutToken(t *testing.T) {
 
 func TestReleaseAuthenticationErrors(t *testing.T) {
 	t.Setenv(GitHubTokenEnv, "")
-	for status, message := range map[int]string{401: GitHubTokenEnv, 403: "Contents", 404: Repo, 429: "限流"} {
+	for status, message := range map[int]string{401: GitHubTokenEnv, 403: "Contents", 404: Repo, 429: "rate limit"} {
 		t.Run(fmt.Sprint(status), func(t *testing.T) {
 			client := &http.Client{Transport: updateTransportFunc(func(req *http.Request) (*http.Response, error) { return updateResponse(req, status, "{}"), nil })}
 			_, err := FetchLatest(t.Context(), client)

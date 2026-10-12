@@ -12,6 +12,32 @@ import (
 // behavior is identical until a user edits a prompt in the UI.
 var PromptOverride func(agentKey string) (string, bool)
 
+// OutputLanguage, if set, returns the configured language for human-readable agent
+// output ("en", "pt-BR", "zh-CN"). renderSystem appends a matching directive after
+// the (editable) prompt body so the choice applies to built-in and custom agents
+// alike, without users having to edit every prompt. Nil or "" → no directive.
+var OutputLanguage func() string
+
+var languageNames = map[string]string{
+	"en":    "English",
+	"pt-BR": "Brazilian Portuguese (pt-BR)",
+	"zh-CN": "Simplified Chinese (zh-CN)",
+}
+
+// languageDirective is the code-owned tail that pins the output language.
+func languageDirective() string {
+	if OutputLanguage == nil {
+		return ""
+	}
+	name, ok := languageNames[OutputLanguage()]
+	if !ok {
+		return ""
+	}
+	return "\n\n━━ Output language ━━\n" +
+		"Write everything meant for a human reader — chat replies, summaries, todo items, finding summaries and notes, reports, retest conclusions — in " + name + ". " +
+		"Keep tool names, tool arguments, code, commands, payloads, HTTP requests/responses, file paths and other technical identifiers verbatim; do not translate data you quote."
+}
+
 // Prompt-variable structs — fields mirror each agent's catalog (docs §5a) so a
 // user template referencing a catalog variable renders; referencing anything else
 // fails template execution and falls back to the built-in default.
@@ -42,14 +68,15 @@ func renderSystem(agentKey, def string, vars any) string {
 			tmpl = t
 		}
 	}
+	lang := languageDirective()
 	if out, err := renderTmpl(tmpl, vars); err == nil {
-		return out
+		return out + lang
 	}
 	// DB template broke (e.g. references an out-of-catalog var) → code default.
 	if out, err := renderTmpl(def, vars); err == nil {
-		return out
+		return out + lang
 	}
-	return def
+	return def + lang
 }
 
 func renderTmpl(tmpl string, vars any) (string, error) {

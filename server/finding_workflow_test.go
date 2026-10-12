@@ -93,7 +93,7 @@ func TestFindingWorkflowAutoHintToPlannerAndSetting(t *testing.T) {
 	ts.SetNotifyFinding(func(int64, string) { notices++ })
 	tools, def, cleanup := agent.AugmentTools(ctx, "planner", ts.PlannerTools())
 	defer cleanup()
-	if !strings.Contains(def.FindingGuidance, "evidence_hint_id") || !strings.Contains(def.FindingGuidance, "取消 Worker") {
+	if !strings.Contains(def.FindingGuidance, "evidence_hint_id") || !strings.Contains(def.FindingGuidance, "cancel Workers") {
 		t.Fatal("Planner missed runtime guidance")
 	}
 	report := workflowTool(t, tools, "report_finding")
@@ -277,7 +277,7 @@ func TestFindingWorkflowReporterBindsBeforeWritingReport(t *testing.T) {
 	seedServerEvidenceFlow(t, s, "reporter-baseline", []byte("local normal response"))
 	tools, def, cleanup := agent.AugmentTools(ctx, "reporter", nil)
 	defer cleanup()
-	if !strings.Contains(def.FindingGuidance, "报告前自动关联流量") || !strings.Contains(def.FindingGuidance, "绑定成功后重新调用") {
+	if !strings.Contains(def.FindingGuidance, "Automatic traffic linking before reporting") || !strings.Contains(def.FindingGuidance, "After a successful bind, call get_finding_traffic again") {
 		t.Fatal("reporter did not receive binding workflow")
 	}
 	for _, name := range []string{"traffic_search", "traffic_get", "get_task_worker_trace", "get_task_node_detail", "bind_finding_traffic", "get_finding_traffic", "update_finding_report"} {

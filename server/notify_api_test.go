@@ -241,7 +241,7 @@ func TestNotifyEndToEndRealtimeDelivery(t *testing.T) {
 		t.Fatalf("应发出 1 条消息，实际 %d", hook.count())
 	}
 	text := markdownText(t, hook.last(t))
-	for _, want := range []string{"SQL注入", "高危", "摘要"} {
+	for _, want := range []string{"SQL注入", "High", "Summary"} {
 		if !strings.Contains(text, want) {
 			t.Fatalf("消息正文缺少 %q:\n%s", want, text)
 		}
@@ -350,7 +350,7 @@ func TestNotifyChannelAPICreateValidation(t *testing.T) {
 		{"类型非法", map[string]any{"name": "x", "kind": "nope", "config": map[string]any{}}, "invalid channel type"},
 		{"缺名称", map[string]any{"kind": notify.KindDingTalk, "config": map[string]any{"webhook": "https://e.com/h"}}, "channel name is required"},
 		{"缺 webhook", map[string]any{"name": "x", "kind": notify.KindDingTalk, "config": map[string]any{}}, "Webhook"},
-		{"webhook 协议非法", map[string]any{"name": "x", "kind": notify.KindDingTalk, "config": map[string]any{"webhook": "file:///etc/passwd"}}, "Webhook 地址无效"},
+		{"webhook 协议非法", map[string]any{"name": "x", "kind": notify.KindDingTalk, "config": map[string]any{"webhook": "file:///etc/passwd"}}, "invalid Webhook URL"},
 		{"模式非法", map[string]any{"name": "x", "kind": notify.KindDingTalk, "mode": "sometimes", "config": map[string]any{"webhook": "https://e.com/h"}}, "invalid push mode"},
 	}
 	for _, tc := range cases {
@@ -427,7 +427,7 @@ func TestNotifyDigestBatchesMultipleFindingsIntoOneMessage(t *testing.T) {
 		t.Fatalf("三条应汇总成一条消息，实际发了 %d 条", got)
 	}
 	text := markdownText(t, hook.last(t))
-	if !strings.Contains(text, "近") || !strings.Contains(text, "3 个漏洞") {
+	if !strings.Contains(text, "in the last") || !strings.Contains(text, "3 new findings") {
 		t.Fatalf("汇总消息缺少条数/时间窗文案:\n%s", text)
 	}
 	for i := 1; i <= 3; i++ {
@@ -488,7 +488,7 @@ func TestNotifyStatusChangeDelivery(t *testing.T) {
 	found := false
 	for i := 0; i < hook.count(); i++ {
 		text := markdownText(t, hook.body(t, i))
-		if strings.Contains(text, "状态变更") && strings.Contains(text, "已修复") {
+		if strings.Contains(text, "Status change") && strings.Contains(text, "Fixed") {
 			found = true
 		}
 	}
@@ -538,7 +538,7 @@ func TestNotifyTestMessageEndpoint(t *testing.T) {
 		t.Fatalf("假接收端应收到 1 条测试消息，得到 %d", hook.count())
 	}
 	// 测试消息必须一眼能看出是测试，不能被误当成真实漏洞。
-	if text := markdownText(t, hook.last(t)); !strings.Contains(text, "测试") {
+	if text := markdownText(t, hook.last(t)); !strings.Contains(text, "Test message") {
 		t.Fatalf("测试消息应标明是测试: %s", text)
 	}
 	// 配置坏掉时应把渠道的原始错误如实回给用户。
@@ -776,7 +776,7 @@ func TestNotifyDigestSegmentsAndDefersRemainder(t *testing.T) {
 		t.Fatalf("条目数对不上：sent=%d pending=%d total=%d（既没送达也没待发=丢失）", sent, pending, total)
 	}
 	// 消息正文必须如实告知还有多少条没包含在本条里。
-	if text := markdownText(t, hook.last(t)); !strings.Contains(text, "其余") {
+	if text := markdownText(t, hook.last(t)); !strings.Contains(text, "remaining") {
 		t.Fatalf("消息应说明还有条目未包含在本条:\n%.400s", text)
 	}
 

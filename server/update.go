@@ -213,6 +213,22 @@ func (s *Server) updateCheck(w http.ResponseWriter, r *http.Request) {
 	if selfupdate.InDocker() {
 		mode = "docker"
 	}
+	if !selfupdate.Enabled {
+		// Answer locally — no GitHub request at all while the updater is compiled out.
+		writeJSON(w, 200, map[string]any{
+			"current":    current,
+			"mode":       mode,
+			"os":         runtime.GOOS,
+			"arch":       runtime.GOARCH,
+			"has_backup": false,
+			"repo":       selfupdate.Repo,
+			"disabled":   true,
+			"comparable": false,
+			"has_update": false,
+			"reason":     selfupdate.DisabledReason,
+		})
+		return
+	}
 	boot := bootUpdateState()
 	out := map[string]any{
 		"current":     current,
@@ -268,6 +284,10 @@ func (s *Server) updateCheck(w http.ResponseWriter, r *http.Request) {
 // 立刻返回 202，实际工作在后台 goroutine 上跑：整包下载可能要几分钟，
 // 挂在请求上会被反代超时掐断。进度走 /api/update/stream。
 func (s *Server) updateApply(w http.ResponseWriter, r *http.Request) {
+	if !selfupdate.Enabled {
+		writeErr(w, 403, selfupdate.DisabledReason)
+		return
+	}
 	current := BuildVersion
 
 	// 走缓存：确保装上的就是用户在界面上看到并确认的那个版本。
@@ -313,6 +333,10 @@ func (s *Server) updateApply(w http.ResponseWriter, r *http.Request) {
 
 // updateRollback 主动退回上一版本（换装前备份的 artex.old）。
 func (s *Server) updateRollback(w http.ResponseWriter, r *http.Request) {
+	if !selfupdate.Enabled {
+		writeErr(w, 403, selfupdate.DisabledReason)
+		return
+	}
 	if _, running := updHub.snapshot(); running {
 		writeErr(w, 409, "更新正在进行中，无法回滚")
 		return

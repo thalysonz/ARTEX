@@ -3,6 +3,11 @@
 services:
   artex:
     image: artex:local
+    # Never pull a prebuilt artex image — always build from the audited source.
+    pull_policy: build
     build:
       context: .
       dockerfile: Dockerfile.build
+    environment:
+      # Use the apt-installed rg; never let norma npm-install @vscode/ripgrep at runtime.
+      NORMA_RIPGREP_NO_INSTALL: "1"

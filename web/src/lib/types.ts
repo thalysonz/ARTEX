@@ -1575,6 +1575,8 @@ export interface UpdateCheck {
   /** 本次启动时自更新自举的结论（换装失败 / 已回滚等），无事发生时为空。 */
   boot_notice?: string;
   rolled_back?: boolean;
+  /** Self-update compiled out of this build: no GitHub check, apply/rollback refused. */
+  disabled?: boolean;
   /** 查询 GitHub 失败时给出原因，此时下面的字段都不会有。 */
   error?: string;
   latest?: string;

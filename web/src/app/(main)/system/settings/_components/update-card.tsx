@@ -283,6 +283,7 @@ export function UpdateCard() {
           </div>
         )}
 
+        {!info?.disabled && (
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={() => check(false)} disabled={checking || busy || restarting}>
             <RefreshCwIcon className={checking ? "size-4 animate-spin" : "size-4"} />
@@ -303,6 +304,7 @@ export function UpdateCard() {
             </Button>
           )}
         </div>
+        )}
 
         <p className="text-xs text-muted-foreground">
           一键更新依赖守护脚本重启程序。请通过 <span className="font-mono">start.sh</span>（Windows 为

@@ -72,10 +72,14 @@ func run() int {
 	// attempt and roll back if the new build keeps dying. Must run before we open
 	// the stores or bind a port — this may end with "exit and let the start script
 	// relaunch me", and there is no point paying for either first.
-	action, upState := selfupdate.Bootstrap()
-	server.SetBootUpdateState(upState)
-	if action == selfupdate.Restart {
-		return selfupdate.ExitRestart
+	// Skipped entirely while selfupdate.Enabled is false: a leftover artex.new must
+	// never be executed (smoke test) or swapped in.
+	if selfupdate.Enabled {
+		action, upState := selfupdate.Bootstrap()
+		server.SetBootUpdateState(upState)
+		if action == selfupdate.Restart {
+			return selfupdate.ExitRestart
+		}
 	}
 
 	// surface which config file the binary reads (absolute, so `go run`'s relative
@@ -104,8 +108,10 @@ func run() int {
 	// Surviving this long means a freshly swapped-in build actually works, so drop
 	// the upgrade marker and stop counting attempts. Until it fires, every boot
 	// increments the count and a build that keeps dying gets rolled back.
-	settle := time.AfterFunc(selfupdate.SettleDelay, selfupdate.Settle)
-	defer settle.Stop()
+	if selfupdate.Enabled {
+		settle := time.AfterFunc(selfupdate.SettleDelay, selfupdate.Settle)
+		defer settle.Stop()
+	}
 
 	skillDir := config.SkillDir()
 	if abs, err := filepath.Abs(skillDir); err == nil {

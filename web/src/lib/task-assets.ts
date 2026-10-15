@@ -1,23 +1,24 @@
+import { t } from "@/i18n";
 import type { NewAssetType } from "@/lib/types";
 
 const ASSET_TYPE_LABELS: Record<NewAssetType, string> = {
-  app: "应用",
-  endpoint: "接口",
+  app: t("应用"),
+  endpoint: t("接口"),
   ip: "IP",
-  root_domain: "根域名",
-  service: "服务",
-  subdomain: "子域名",
+  root_domain: t("根域名"),
+  service: t("服务"),
+  subdomain: t("子域名"),
 };
 
 const TASK_ASSET_SOURCE_LABELS: Record<string, string> = {
-  agent: "Agent 发现",
-  anchor: "黑板锚点",
-  api: "资产 API",
-  company: "企业关联",
-  legacy: "历史关联",
-  manual: "人工加入",
-  system: "系统关联",
-  task: "任务初始化",
+  agent: t("Agent 发现"),
+  anchor: t("黑板锚点"),
+  api: t("资产 API"),
+  company: t("企业关联"),
+  legacy: t("历史关联"),
+  manual: t("人工加入"),
+  system: t("系统关联"),
+  task: t("任务初始化"),
 };
 
 export function taskAssetTypeLabel(type: NewAssetType): string {

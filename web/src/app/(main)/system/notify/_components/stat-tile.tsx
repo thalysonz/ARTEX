@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { t } from "@/i18n";
 
 export function StatTile({ label, value, hint, tone }: { label: string; value: string; hint?: string; tone?: string }) {
   return (
@@ -15,7 +16,7 @@ export function StatTile({ label, value, hint, tone }: { label: string; value: s
 // formatBacklog 把积压毫秒数渲染成人看得懂的量级。
 export function formatBacklog(ms: number): string {
   if (!ms) return "—";
-  if (ms < 60_000) return `${Math.round(ms / 1000)} 秒`;
-  if (ms < 3_600_000) return `${Math.round(ms / 60_000)} 分钟`;
-  return `${(ms / 3_600_000).toFixed(1)} 小时`;
+  if (ms < 60_000) return t("{n} 秒", { n: Math.round(ms / 1000) });
+  if (ms < 3_600_000) return t("{n} 分钟", { n: Math.round(ms / 60_000) });
+  return t("{n} 小时", { n: (ms / 3_600_000).toFixed(1) });
 }
